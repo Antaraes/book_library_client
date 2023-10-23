@@ -1,6 +1,8 @@
 "use client";
-import { FC, useState } from "react";
+import { FC, FormEvent, useState } from "react";
 import Cookies from "universal-cookie";
+import { isAuthenticated, logout, setAuth } from "@/redux/auth/authSlice";
+import api from "@/api/book.api";
 import {
   Navbar,
   MobileNav,
@@ -29,7 +31,9 @@ import {
   RocketLaunchIcon,
   Bars2Icon,
 } from "@heroicons/react/24/outline";
+
 import React from "react";
+import { useAppSelector, useAppDispatch } from "@/redux/hook";
 const profileMenuItems = [
   {
     label: "My Profile",
@@ -47,14 +51,19 @@ const profileMenuItems = [
     label: "Help",
     icon: LifebuoyIcon,
   },
-  {
-    label: "Sign Out",
-    icon: PowerIcon,
-  },
 ];
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const handleLogout = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
+    api.post("/auth/logout");
+    dispatch(logout());
+    console.log("Logout");
+
+    window.location.reload();
+  };
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
@@ -104,6 +113,18 @@ function ProfileMenu() {
             </MenuItem>
           );
         })}
+        <MenuItem
+          onClick={(e) => handleLogout(e)}
+          className={`flex items-center gap-2 rounded "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10" `}
+        >
+          {React.createElement(PowerIcon, {
+            className: `h-4 w-4 text-red-500 `,
+            strokeWidth: 2,
+          })}
+          <Typography as="span" variant="small" className="font-normal" color="red">
+            Sign Out
+          </Typography>
+        </MenuItem>
       </MenuList>
     </Menu>
   );
@@ -143,9 +164,8 @@ interface HeaderProps {}
 const Header: FC<HeaderProps> = ({}) => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const router = useRouter();
+  const isAuth: boolean = useAppSelector(isAuthenticated);
   const cookies = new Cookies();
-  const isUser = cookies.get("user");
-  console.log(isUser);
 
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
@@ -167,7 +187,7 @@ const Header: FC<HeaderProps> = ({}) => {
         >
           <Bars2Icon className="h-6 w-6" />
         </IconButton>
-        {isUser ? (
+        {isAuth ? (
           <ProfileMenu />
         ) : (
           <Button onClick={() => router.push("/auth/login")}>Sign In</Button>

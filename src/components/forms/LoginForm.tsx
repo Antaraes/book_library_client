@@ -6,13 +6,13 @@ import { Form } from "../forms/index";
 interface LoginFormProps {}
 
 const LoginForm: FC<LoginFormProps> = ({}) => {
-  const { username, password, isLoading, onChange, onSubmit } = useLogin();
+  const { email, password, isLoading, onChange, onSubmit } = useLogin();
   const config = [
     {
-      labelText: "Username ",
-      labelId: "username",
-      type: "username",
-      value: username,
+      labelText: "Email ",
+      labelId: "email",
+      type: "email",
+      value: email,
       required: true,
     },
     {

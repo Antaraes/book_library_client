@@ -1,32 +1,51 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import api from "../api/book.api";
+import { useDispatch } from "react-redux";
 import Cookies from "universal-cookie";
+import { setAuth } from "@/redux/auth/authSlice";
+
 import { toast } from "react-toastify";
 import { error } from "console";
+import { supabase } from "../config/db";
 export default function useLogin() {
   const cookies = new Cookies();
   const router = useRouter();
+  const dispatch = useDispatch();
   //   const [login, { isLoading }] = useLoginMutation();
   const [isLoading, setIsloading] = useState(false);
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
-  const { username, password } = formData;
+
+  const { email, password } = formData;
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log("Login");
+
     api
-      .post("/auth/login", { username, password })
+      .post("/auth/login", { email, password })
       .then((res) => {
-        if (res.data && res.data.user) {
-          cookies.set("user", res.data.user, {
-            path: "/",
+        console.log(res);
+
+        if (res.data.data.user) {
+          dispatch(setAuth)();
+          toast.success("🦄 Login Success.", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
           });
+          cookies.set("user", res.data.data.session.access_token);
           router.push("/");
         } else {
           toast.error("🦄 Login failed. Please try again.", {
@@ -56,7 +75,7 @@ export default function useLogin() {
   };
 
   return {
-    username,
+    email,
     password,
     isLoading,
     onChange,

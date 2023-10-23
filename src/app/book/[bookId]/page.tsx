@@ -5,6 +5,7 @@ import { fetchAsyncBookDetail, getBookDetail } from "@/redux/book/bookSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { BookData } from "@/type";
 import { Typography } from "@material-tailwind/react";
+import { useParams } from "next/navigation";
 import { FC, useEffect, useMemo, useState } from "react";
 import React from "react";
 interface BookContent {
@@ -23,9 +24,11 @@ interface PageProps {
 let PageSize = 2;
 const Page: FC<PageProps> = ({ bookContent, onPageChange }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const id = useParams();
+  const bookId = parseInt(id.bookId, 10);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(fetchAsyncBookDetail({ bookId: 1, currentPage: 6 }));
+    dispatch(fetchAsyncBookDetail({ bookId: bookId, currentPage: 1 }));
   }, []);
   const bookDetail: BookData = useAppSelector(getBookDetail);
   // eslint-disable-next-line react-hooks/rules-of-hooks

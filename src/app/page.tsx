@@ -1,5 +1,6 @@
 "use client";
 import PreviewCard from "@/components/PreviewCard";
+import { setAuth } from "@/redux/auth/authSlice";
 import {
   fetchAsyncBookDetail,
   fetchAsyncBookmarks,
@@ -20,6 +21,7 @@ export default function Home() {
   const booksList = useAppSelector(getBooksList);
 
   console.log(booksList);
+  console.log(setAuth());
 
   return (
     <main className="h-full">

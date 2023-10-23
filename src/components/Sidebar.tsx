@@ -39,6 +39,7 @@ export function SidebarWithSearch() {
   const [open, setOpen] = React.useState(0);
   const [openAlert, setOpenAlert] = React.useState(true);
   const bookmarksByUser = useAppSelector(getBookmarks);
+
   console.log(bookmarksByUser);
 
   const handleOpen = (value: number) => {
