@@ -23,20 +23,25 @@ interface PageProps {
 
 let PageSize = 2;
 const Page: FC<PageProps> = ({ bookContent, onPageChange }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const id = useParams();
-  const bookId = parseInt(id.bookId, 10);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const { bookId, pageId } = useParams();
   const dispatch = useAppDispatch();
+  const pageIdNo = parseInt(pageId, 10);
   useEffect(() => {
-    dispatch(fetchAsyncBookDetail({ bookId: bookId, currentPage: 1 }));
+    dispatch(fetchAsyncBookDetail({ bookId, currentPage: pageId }));
+    setCurrentPage(parseInt(pageIdNo, 10));
   }, []);
   const bookDetail: BookData = useAppSelector(getBookDetail);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
     return bookDetail.contents?.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage]);
+  }, [currentPage, pageId]);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+
+  console.log("currentTableData", currentTableData);
+
   console.log(bookDetail);
 
   if (!bookDetail) {
@@ -58,10 +63,14 @@ const Page: FC<PageProps> = ({ bookContent, onPageChange }) => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
-      <div className="flex ">
+      <div className="relative grid grid-cols-2 gap-2  ">
         {currentTableData?.map((item, index) => {
           return (
-            <tr key={index} className="border border-l-2 border-black">
+            <tr
+              key={index}
+              className="border border-l-2 p-3  border-black h-[600px] overflow-scroll"
+            >
+              <p className="text-center ">Page - {item.page_no}</p>
               <td>{item.content}</td>
             </tr>
           );

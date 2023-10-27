@@ -33,3 +33,19 @@ export type BookData = {
   book: Book;
   contents: PageContent[];
 };
+
+type BookmarkPage = {
+  id: number;
+  bookId: number;
+  content: string;
+  page_no: number;
+};
+
+type BookByBookmark = {
+  id: number;
+  bookId: number;
+  bookTitle: string;
+  bookmarkPages: BookmarkPage[];
+};
+
+type BookmarksData = BookByBookmark[];

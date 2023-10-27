@@ -34,11 +34,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { useAppSelector } from "@/redux/hook";
 import { getBookmarks } from "@/redux/book/bookSlice";
+import { BookmarksData } from "@/type";
 
 export function SidebarWithSearch() {
   const [open, setOpen] = React.useState(0);
   const [openAlert, setOpenAlert] = React.useState(true);
-  const bookmarksByUser = useAppSelector(getBookmarks);
+  const bookmarksByUser: BookmarksData = useAppSelector(getBookmarks);
 
   console.log(bookmarksByUser);
 
@@ -156,7 +157,9 @@ export function SidebarWithSearch() {
                   <AccordionBody className="py-1">
                     <List className="p-0">
                       {bookmark.bookmarkPages.map((page, index) => (
-                        <ListItem key={index}>Page No - {page.page_no}</ListItem>
+                        <Link key={index} href={`/book/${bookmark.bookId}/${page.page_no}`}>
+                          Page No - {page.page_no}
+                        </Link>
                       ))}
                     </List>
                   </AccordionBody>
