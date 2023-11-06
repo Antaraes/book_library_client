@@ -3,17 +3,18 @@ import { useRouter } from "next/navigation";
 import api from "../api/book.api";
 import { useDispatch } from "react-redux";
 import Cookies from "universal-cookie";
-import { setAuth } from "@/redux/auth/authSlice";
+import { fetchUserLogin, setAuth } from "@/redux/auth/authSlice";
 
 import { toast } from "react-toastify";
 import { error } from "console";
 import { supabase } from "../config/db";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
 export default function useLogin() {
   const cookies = new Cookies();
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const { isLoading, isError } = useAppSelector((state) => state.auth);
   //   const [login, { isLoading }] = useLoginMutation();
-  const [isLoading, setIsloading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,7 +28,7 @@ export default function useLogin() {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log("Login");
-
+    // dispatch(fetchUserLogin({ email, password }));
     api
       .post("/auth/login", { email, password })
       .then((res) => {

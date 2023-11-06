@@ -40,8 +40,8 @@ export function SidebarWithSearch() {
   const [open, setOpen] = React.useState(0);
   const [openAlert, setOpenAlert] = React.useState(true);
   const bookmarksByUser: BookmarksData = useAppSelector(getBookmarks);
-
-  console.log(bookmarksByUser);
+  const { userInfo } = useAppSelector((state) => state.auth);
+  console.log(userInfo);
 
   const handleOpen = (value: number) => {
     setOpen(open === value ? 0 : value);
@@ -121,53 +121,62 @@ export function SidebarWithSearch() {
             </List>
           </AccordionBody>
         </Accordion>
-        <Accordion
-          open={open === 2}
-          icon={
-            <ChevronDownIcon
-              strokeWidth={2.5}
-              className={`mx-auto h-4 w-4 transition-transform ${open === 2 ? "rotate-180" : ""}`}
-            />
-          }
-        >
-          <ListItem className="p-0" selected={open === 2}>
-            <AccordionHeader onClick={() => handleOpen(2)} className="border-b-0 p-3">
-              <ListItemPrefix>
-                <BookmarkIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              <Typography color="blue-gray" className="mr-auto font-normal">
-                Bookmark
-              </Typography>
-            </AccordionHeader>
-          </ListItem>
-          <AccordionBody className="py-1">
-            <List className="p-0">
-              {bookmarksByUser.map((bookmark, index) => (
-                <>
-                  <ListItem key={index} selected={open === index}>
-                    <AccordionHeader onClick={() => handleOpen(index)} className="border-b-0 p-3">
-                      <ListItemPrefix>
-                        <BookmarkSquareIcon className="h-5 w-5" />
-                      </ListItemPrefix>
-                      <Typography color="blue-gray" className="mr-auto font-normal">
-                        {bookmark.bookTitle}
-                      </Typography>
-                    </AccordionHeader>
-                  </ListItem>
-                  <AccordionBody className="py-1">
-                    <List className="p-0">
-                      {bookmark.bookmarkPages.map((page, index) => (
-                        <Link key={index} href={`/book/${bookmark.bookId}/${page.page_no}`}>
-                          Page No - {page.page_no}
-                        </Link>
-                      ))}
-                    </List>
-                  </AccordionBody>
-                </>
-              ))}
-            </List>
-          </AccordionBody>
-        </Accordion>
+        {userInfo && (
+          <>
+            <Accordion
+              open={open === 2}
+              icon={
+                <ChevronDownIcon
+                  strokeWidth={2.5}
+                  className={`mx-auto h-4 w-4 transition-transform ${
+                    open === 2 ? "rotate-180" : ""
+                  }`}
+                />
+              }
+            >
+              <ListItem className="p-0" selected={open === 2}>
+                <AccordionHeader onClick={() => handleOpen(2)} className="border-b-0 p-3">
+                  <ListItemPrefix>
+                    <BookmarkIcon className="h-5 w-5" />
+                  </ListItemPrefix>
+                  <Typography color="blue-gray" className="mr-auto font-normal">
+                    Bookmark
+                  </Typography>
+                </AccordionHeader>
+              </ListItem>
+              <AccordionBody className="py-1">
+                <List className="p-0">
+                  {bookmarksByUser.map((bookmark, index) => (
+                    <>
+                      <ListItem key={index} selected={open === index}>
+                        <AccordionHeader
+                          onClick={() => handleOpen(index)}
+                          className="border-b-0 p-3"
+                        >
+                          <ListItemPrefix>
+                            <BookmarkSquareIcon className="h-5 w-5" />
+                          </ListItemPrefix>
+                          <Typography color="blue-gray" className="mr-auto font-normal">
+                            {bookmark.bookTitle}
+                          </Typography>
+                        </AccordionHeader>
+                      </ListItem>
+                      <AccordionBody className="py-1">
+                        <List className="p-0">
+                          {bookmark.bookmarkPages.map((page, index) => (
+                            <Link key={index} href={`/book/${bookmark.bookId}/${page.page_no}`}>
+                              Page No - {page.page_no}
+                            </Link>
+                          ))}
+                        </List>
+                      </AccordionBody>
+                    </>
+                  ))}
+                </List>
+              </AccordionBody>
+            </Accordion>
+          </>
+        )}
         <hr className="my-2 border-blue-gray-50" />
       </List>
       <Alert open={openAlert} className="mt-auto" onClose={() => setOpenAlert(false)}>

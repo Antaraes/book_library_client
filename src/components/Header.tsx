@@ -1,6 +1,7 @@
 "use client";
-import { FC, FormEvent, useState } from "react";
+import { FC, FormEvent, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
+
 import { isAuthenticated, logout, setAuth } from "@/redux/auth/authSlice";
 import api from "@/api/book.api";
 import {
@@ -38,31 +39,33 @@ const profileMenuItems = [
   {
     label: "My Profile",
     icon: UserCircleIcon,
+    link: `user/1/userProfile`,
   },
   {
     label: "Edit Profile",
     icon: Cog6ToothIcon,
+    link: `user/1/userProfile`,
   },
   {
     label: "Inbox",
     icon: InboxArrowDownIcon,
+    link: `user/1/userProfile`,
   },
   {
     label: "Help",
     icon: LifebuoyIcon,
+    link: `user/1/userProfile`,
   },
 ];
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const handleLogout = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    api.post("/auth/logout");
     dispatch(logout());
     console.log("Logout");
-
-    window.location.reload();
   };
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -88,12 +91,12 @@ function ProfileMenu() {
         </Button>
       </MenuHandler>
       <MenuList className="p-1">
-        {profileMenuItems.map(({ label, icon }, key) => {
+        {profileMenuItems.map(({ label, icon, link }, key) => {
           const isLastItem = key === profileMenuItems.length - 1;
           return (
             <MenuItem
               key={label}
-              onClick={closeMenu}
+              onClick={() => router.push(link)}
               className={`flex items-center gap-2 rounded ${
                 isLastItem ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10" : ""
               }`}
@@ -164,8 +167,13 @@ interface HeaderProps {}
 const Header: FC<HeaderProps> = ({}) => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
   const router = useRouter();
-  const isAuth: boolean = useAppSelector(isAuthenticated);
+  const { userInfo, user } = useAppSelector((state) => state.auth);
   const cookies = new Cookies();
+  useEffect(() => {
+    if (userInfo) {
+      console.log("Login");
+    }
+  }, [user]);
 
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
@@ -187,7 +195,7 @@ const Header: FC<HeaderProps> = ({}) => {
         >
           <Bars2Icon className="h-6 w-6" />
         </IconButton>
-        {isAuth ? (
+        {userInfo ? (
           <ProfileMenu />
         ) : (
           <Button onClick={() => router.push("/auth/login")}>Sign In</Button>
